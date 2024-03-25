@@ -1,0 +1,75 @@
+# This workflow will build and push an application Azure Container Registry
+#
+# This workflow assumes you have already created an Azure Container Registry (ACR)
+# For instructions see:
+#   - https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal
+#
+# To configure this workflow:
+#
+# 1. Set the following secrets in your repository (instructions for getting these can be found at https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-cli%2Clinux):
+#    - AZURE_CLIENT_ID
+#    - AZURE_TENANT_ID
+#    - AZURE_SUBSCRIPTION_ID
+#
+# 2. Set the following environment variables (or replace the values below):
+#    - AZURE_CONTAINER_REGISTRY (name of your container registry / ACR)
+#    - CONTAINER_NAME (name of the container image you would like to push up to your ACR)
+#    - CONTAINER_TAG (docker image tag)
+#    - PROJECT_PATH (base path of the project in the repo)
+#    - RESOURCE_GROUP (where your cluster is deployed)
+#    - DOCKERFILE (path of the dockerfile)
+#
+# For more information on GitHub Actions for Azure, refer to https://github.com/Azure/Actions
+# For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
+# For more options with the actions used below please refer to https://github.com/Azure/login
+
+name: 'Reusable Workflow Build and Push to ACR'
+
+on:
+  workflow_call:
+    inputs:
+      AZURE_CONTAINER_REGISTRY:
+        required: true
+        type: string
+        default: ''
+      CONTAINER_NAME:
+        required: true
+        type: string
+        default: ''
+      CONTAINER_TAG:
+        required: true
+        type: string
+        default: ''
+      RESOURCE_GROUP:
+        required: true
+        type: string
+        default: ''
+      DOCKERFILE:
+        required: true
+        type: string
+        default: ''
+      PROJECT_PATH:
+        required: true
+        type: string
+        default: ''
+
+jobs:
+  buildImage:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out the repository this file is in
+      - uses: actions/checkout@v3
+
+      # Logs in with your Azure credentials
+      - name: Azure login
+        uses: azure/login@v1.4.6
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Builds and pushes an image up to your Azure Container Registry
+      - name: Build and push image to ACR
+        run: |
+          az acr login --name ${{ inputs.AZURE_CONTAINER_REGISTRY }}
+          az acr build --image ${{ inputs.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ inputs.CONTAINER_NAME }}:${{ inputs.CONTAINER_TAG }} --registry ${{ inputs.AZURE_CONTAINER_REGISTRY }} -g ${{ inputs.RESOURCE_GROUP }} ${{ inputs.PROJECT_PATH }}

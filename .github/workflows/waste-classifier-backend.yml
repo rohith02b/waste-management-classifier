@@ -1,0 +1,83 @@
+name: 'Waste Classifier Backend - Build and Deploy'
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: 'robadrinacr1'
+  CONTAINER_NAME: 'waste-classifier_backend'
+  CONTAINER_TAG: 'latest'
+  PROJECT_PATH: 'Classifier-backend'
+  DOCKERFILE: './Dockerfile'
+  RESOURCE_GROUP: 'WLD'
+  CLUSTER_NAME: 'robadrin-aks1'
+  DEPLOYMENT_MANIFEST_PATH: 'manifest'
+  CLUSTER_NAMESPACE: 'waste-classifier'
+  ENVIRONMENT: 'dev'
+
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    outputs:
+      AZURE_CONTAINER_REGISTRY: ${{ steps.step1.outputs.AZURE_CONTAINER_REGISTRY }}
+      CONTAINER_NAME: ${{ steps.step1.outputs.CONTAINER_NAME }}
+      CONTAINER_TAG: ${{ steps.step1.outputs.CONTAINER_TAG }}
+      PROJECT_PATH: ${{ steps.step1.outputs.PROJECT_PATH }}
+      DOCKERFILE: ${{ steps.step1.outputs.DOCKERFILE }}
+      RESOURCE_GROUP: ${{ steps.step1.outputs.RESOURCE_GROUP }}
+      CLUSTER_NAME: ${{ steps.step1.outputs.CLUSTER_NAME }}
+      DEPLOYMENT_MANIFEST_PATH: ${{ steps.step1.outputs.DEPLOYMENT_MANIFEST_PATH }}
+      CLUSTER_NAMESPACE: ${{ steps.step1.outputs.CLUSTER_NAMESPACE }}
+      ENVIRONMENT: ${{ steps.step1.outputs.ENVIRONMENT }}
+    steps:
+      - name: Print inputs passed to the reusable workflow
+        id: step1
+        run: |
+          echo "AZURE_CONTAINER_REGISTRY=$AZURE_CONTAINER_REGISTRY" >> $GITHUB_OUTPUT
+          echo "CONTAINER_NAME=$CONTAINER_NAME" >> $GITHUB_OUTPUT
+          echo "CONTAINER_TAG=$CONTAINER_TAG" >> $GITHUB_OUTPUT
+          echo "PROJECT_PATH=$PROJECT_PATH" >> $GITHUB_OUTPUT
+          echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_OUTPUT
+          echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_OUTPUT
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+          echo "DEPLOYMENT_MANIFEST_PATH=$DEPLOYMENT_MANIFEST_PATH" >> $GITHUB_OUTPUT
+          echo "CLUSTER_NAMESPACE=$CLUSTER_NAMESPACE" >> $GITHUB_OUTPUT
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_OUTPUT
+
+  buildImage:
+    permissions:
+      contents: read
+      id-token: write
+    needs: [print]
+    uses: rohith02b/waste-management-classifier/.github/workflows/build-push-acr.yml@main
+    with:
+      AZURE_CONTAINER_REGISTRY: ${{ needs.print.outputs.AZURE_CONTAINER_REGISTRY }}
+      CONTAINER_NAME: ${{ needs.print.outputs.CONTAINER_NAME }}
+      CONTAINER_TAG: ${{ needs.print.outputs.CONTAINER_TAG }}
+      PROJECT_PATH: ${{ needs.print.outputs.PROJECT_PATH }}
+      DOCKERFILE: ${{ needs.print.outputs.DOCKERFILE }}
+      RESOURCE_GROUP: ${{ needs.print.outputs.RESOURCE_GROUP }}
+    secrets: inherit
+
+  deploy:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    needs: [buildImage, print]
+    uses: rohith02b/waste-management-classifier/.github/workflows/deploy-aks.yml@main
+    with:
+      AZURE_CONTAINER_REGISTRY: ${{ needs.print.outputs.AZURE_CONTAINER_REGISTRY }}
+      CONTAINER_NAME: ${{ needs.print.outputs.CONTAINER_NAME }}
+      CONTAINER_TAG: ${{ needs.print.outputs.CONTAINER_TAG }}
+      PROJECT_PATH: ${{ needs.print.outputs.PROJECT_PATH }}
+      RESOURCE_GROUP: ${{ needs.print.outputs.RESOURCE_GROUP }}
+      CLUSTER_NAME: ${{ needs.print.outputs.CLUSTER_NAME }}
+      DEPLOYMENT_MANIFEST_PATH: ${{ needs.print.outputs.DEPLOYMENT_MANIFEST_PATH }}
+      CLUSTER_NAMESPACE: ${{ needs.print.outputs.CLUSTER_NAMESPACE }}
+      ENVIRONMENT: ${{ needs.print.outputs.ENVIRONMENT }}
+    secrets: inherit
