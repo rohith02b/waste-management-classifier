@@ -9,7 +9,7 @@ on:
 
 env:
   AZURE_CONTAINER_REGISTRY: 'robadrinacr1'
-  CONTAINER_NAME: 'waste-classifier_backend'
+  CONTAINER_NAME: 'waste-classifier-backend-service'
   CONTAINER_TAG: 'latest'
   PROJECT_PATH: 'Classifier-backend'
   DOCKERFILE: './Dockerfile'
