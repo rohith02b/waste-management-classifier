@@ -15,4 +15,4 @@ spec:
               service:
                 name: waste-classifier_backend
                 port:
-                  number: 5002
+                  number: 5000

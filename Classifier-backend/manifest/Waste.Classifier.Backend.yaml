@@ -18,7 +18,7 @@ spec:
         - name: waste-classifier_backend
           image: robadrinacr1.azurecr.io/waste-classifier_backend:latest
           ports:
-            - containerPort: 5001
+            - containerPort: 5000
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -30,5 +30,5 @@ spec:
     app: waste-classifier_backend
   ports:
     - protocol: TCP
-      port: 5001
+      port: 5000
       targetPort: 5000
