@@ -56,7 +56,7 @@ def predict_waste():
 @app.route('/waste-classifier/service/',methods=['GET'])
 def server_status() :
     return jsonify({
-        'status' : 'Server up and running'
+        'status' : 'Server running'
     })
 
 
