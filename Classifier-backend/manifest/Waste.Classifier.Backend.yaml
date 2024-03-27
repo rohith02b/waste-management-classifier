@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: waste-classifier-backend
+  name: waste-classifier-backend-service
   labels:
-    app: waste-classifier-backend
+    app: waste-classifier-backend-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: waste-classifier-backend
+      app: waste-classifier-backend-service
   template:
     metadata:
       labels:
-        app: waste-classifier-backend
+        app: waste-classifier-backend-service
     spec:
       containers:
-        - name: waste-classifier-backend
-          image: robadrinacr1.azurecr.io/waste-classifier-backend:latest
+        - name: waste-classifier-backend-service
+          image: robadrinacr1.azurecr.io/waste-classifier-backend-service:latest
           ports:
             - containerPort: 5000
           imagePullPolicy: Always
@@ -27,7 +27,7 @@ metadata:
   name: waste-classifier-backend-service
 spec:
   selector:
-    app: waste-classifier-backend
+    app: waste-classifier-backend-service
   ports:
     - protocol: TCP
       port: 5000
