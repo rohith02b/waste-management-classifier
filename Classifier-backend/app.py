@@ -23,7 +23,7 @@ def waste_prediction(new_image):
   predicted_accuracy = round(np.max(predicted_array) * 100, 2)
   return predicted_value, predicted_accuracy
 
-@app.route('/predict_waste', methods=['POST'])
+@app.route('/waste-classifier/service/predict_waste', methods=['POST'])
 def predict_waste():
     if 'img' not in request.files:
         return jsonify({'error': 'No image found in request'})
@@ -52,6 +52,12 @@ def predict_waste():
     except() : 
         return jsonify({'error': 'An Error occurred' , status : 500})
 
+
+@app.route('/waste-classifier/service/',methods=['GET'])
+def server_status() :
+    return jsonify({
+        'status' : 'Server up and running'
+    })
 
 
 if __name__ == '__main__':

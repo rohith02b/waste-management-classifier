@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     python3-venv \
  && rm -rf /var/lib/apt/lists/* \
  && python3 -m venv venv \
- && . venv/bin/activate \
+ && ./venv/bin/activate \
  && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
