@@ -1,20 +1,12 @@
-FROM python:3.9-slim
+# syntax=docker/dockerfile:1
 
-# Set working directory
+FROM python:3.8-slim-buster
+
 WORKDIR /usr/src/app
 
-# Copy requirements file
-COPY requirements.txt .
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    python3-venv \
- && rm -rf /var/lib/apt/lists/* \
- && python3 -m venv venv \
- && . venv/bin/activate \
- && pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
-CMD ["python3", "app.py"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
