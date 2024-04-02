@@ -3,7 +3,7 @@ import pika
 def on_message_received(ch, method, properties, body):
     print(f"firstconsumer - received new message: {body}")
 
-connection_parameters = pika.ConnectionParameters('http://robadrin-aks1.westeurope.cloudapp.azure.com/')
+connection_parameters = pika.ConnectionParameters('localhost')
 
 connection = pika.BlockingConnection(connection_parameters)
 
