@@ -4,10 +4,17 @@ import numpy as np
 from tensorflow.keras.preprocessing import image
 import keras
 import os
+import pika
+from pika.exchange_type import ExchangeType
 
 
 app = Flask(__name__)
 print("Server running")
+
+connection_parameters = pika.ConnectionParameters('http://robadrin-aks1.westeurope.cloudapp.azure.com')
+connection = pika.BlockingConnection(connection_parameters)
+channel = connection.channel()
+channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
 
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
 
@@ -23,6 +30,10 @@ def waste_prediction(new_image):
   predicted_value = output_class[np.argmax(predicted_array)]
   predicted_accuracy = round(np.max(predicted_array) * 100, 2)
   return predicted_value, predicted_accuracy
+
+def publish_to_queue(message):
+    channel.basic_publish(exchange='pubsub', routing_key='', body=message)
+    connection.close()
 
 @app.route('/waste-classifier/service/predict_waste', methods=['POST'])
 def predict_waste():
@@ -42,6 +53,7 @@ def predict_waste():
 
         # Delete the temporarily saved image
         os.remove(img_path)
+        publish_to_queue(predicted_value)
 
         response = {
             'predicted_waste': predicted_value,

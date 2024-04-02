@@ -3,3 +3,4 @@ waitress
 tensorflow
 keras
 pillow
+pika
