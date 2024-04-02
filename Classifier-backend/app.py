@@ -15,7 +15,7 @@ print("Server running")
 # connection_parameters = pika.ConnectionParameters('robadrin-aks1.westeurope.cloudapp.azure.com',5672,'/',credentials)
 # connection = pika.BlockingConnection(connection_parameters)
 # channel = connection.channel()
-channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
+# channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
 
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
 
