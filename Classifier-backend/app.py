@@ -11,10 +11,10 @@ from pika.exchange_type import ExchangeType
 app = Flask(__name__)
 print("Server running")
 
-credentials = pika.PlainCredentials('guest', 'guest')
-connection_parameters = pika.ConnectionParameters('robadrin-aks1.westeurope.cloudapp.azure.com',5672,'/',credentials)
-connection = pika.BlockingConnection(connection_parameters)
-channel = connection.channel()
+# credentials = pika.PlainCredentials('guest', 'guest')
+# connection_parameters = pika.ConnectionParameters('robadrin-aks1.westeurope.cloudapp.azure.com',5672,'/',credentials)
+# connection = pika.BlockingConnection(connection_parameters)
+# channel = connection.channel()
 channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
 
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
@@ -54,7 +54,7 @@ def predict_waste():
 
         # Delete the temporarily saved image
         os.remove(img_path)
-        publish_to_queue(predicted_value)
+        # publish_to_queue(predicted_value)
 
         response = {
             'predicted_waste': predicted_value,
