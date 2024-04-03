@@ -10,12 +10,21 @@ from pika.exchange_type import ExchangeType
 
 app = Flask(__name__)
 print("Server running")
+host = os.getenv('RMQ_HOST')
+username = os.getenv('RMQ_USERNAME')
+password = os.getenv('RMQ_PASS')
+port = os.getenv('RMQ_PORT')
 
-# credentials = pika.PlainCredentials('guest', 'guest')
-# connection_parameters = pika.ConnectionParameters('robadrin-aks1.westeurope.cloudapp.azure.com',5672,'/',credentials)
-# connection = pika.BlockingConnection(connection_parameters)
-# channel = connection.channel()
-# channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
+
+try :
+    credentials = pika.PlainCredentials(username, password)
+    connection_parameters = pika.ConnectionParameters(host,port,'/',credentials)
+    connection = pika.BlockingConnection(connection_parameters)
+    channel = connection.channel()
+    channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
+except() :
+    print("Error occurred")
+
 
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
 
@@ -34,7 +43,6 @@ def waste_prediction(new_image):
 
 def publish_to_queue(message):
     channel.basic_publish(exchange='pubsub', routing_key='', body=message)
-    connection.close()
 
 @app.route('/waste-classifier/service/predict_waste', methods=['POST'])
 def predict_waste():
@@ -54,7 +62,7 @@ def predict_waste():
 
         # Delete the temporarily saved image
         os.remove(img_path)
-        # publish_to_queue(predicted_value)
+        publish_to_queue(predicted_value)
 
         response = {
             'predicted_waste': predicted_value,
@@ -73,7 +81,5 @@ def server_status() :
         'status' : 'Server running'
     })
 
-
 if __name__ == "__main__":
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=5000)
+    app.run(debug=False)
