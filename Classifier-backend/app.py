@@ -14,11 +14,12 @@ host = os.getenv('RMQ_HOST')
 username = os.getenv('RMQ_USERNAME')
 password = os.getenv('RMQ_PASS')
 port = os.getenv('RMQ_PORT')
+path = os.getenv('RMQ_PATH')
 
 
 try :
     credentials = pika.PlainCredentials(username, password)
-    connection_parameters = pika.ConnectionParameters(host,port,'/',credentials)
+    connection_parameters = pika.ConnectionParameters(host,port,path,credentials)
     connection = pika.BlockingConnection(connection_parameters)
     channel = connection.channel()
     channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)

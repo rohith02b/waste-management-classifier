@@ -20,6 +20,32 @@ spec:
           ports:
             - containerPort: 5000
           imagePullPolicy: Always
+          env:
+            - name: RMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: wc-service-secret
+                  key: rmq_host
+            - name: RMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: wc-service-secret
+                  key: rmq_username
+            - name: RMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: wc-service-secret
+                  key: rmq_pass
+            - name: RMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: wc-service-secret
+                  key: rmq_port
+            - name: RMQ_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: wc-service-secret
+                  key: rmq_path
 ---
 apiVersion: v1
 kind: Service
