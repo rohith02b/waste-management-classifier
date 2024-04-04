@@ -8,15 +8,9 @@ export default async function LandingLayout({ children, btnText }: any) {
       <nav className='my-6  flex flex-col gap-6 md:flex-row md:gap-0 justify-center md:justify-between'>
         <p className='text-xl text-center'>WASTE CLASSIFIER</p>
         <div className='flex gap-6 justify-center'>
-          {btnText === 'Go back' ? (
-            <Link href={'/'}>
-              <Button>Go Back</Button>
-            </Link>
-          ) : (
-            <Link href={'/dashboard'}>
-              <Button>Get started</Button>
-            </Link>
-          )}
+          <Link href={'/'}>
+            <Button>Get started</Button>
+          </Link>
         </div>
       </nav>
       <div>{children}</div>

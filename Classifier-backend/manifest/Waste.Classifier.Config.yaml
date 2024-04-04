@@ -4,8 +4,8 @@ metadata:
   name: wc-service-secret
 type: Opaque
 data:
-  rmq_host: cm9iYWRyaW4tYWtzMS53ZXN0ZXVyb3BlLmNsb3VkYXBwLmF6dXJlLmNvbQ==
-  rmq_username: Z3Vlc3Q=
-  rmq_pass: Z3Vlc3Q=
+  rmq_host: Z29vc2Uucm1xMi5jbG91ZGFtcXAuY29t
+  rmq_username: d2R6b2dxZGc=
+  rmq_pass: d1hNdTVJc3dSZXJJRl9UYkl3dmNhUzZhdnhNbHpBWks=
   rmq_port: NTY3Mg==
-  rmq_path: L3JhYmJpdG1xL3NlcnZpY2U=
+  rmq_path: d2R6b2dxZGc=
