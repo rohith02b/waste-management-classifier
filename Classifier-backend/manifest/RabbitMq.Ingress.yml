@@ -10,10 +10,17 @@ spec:
     - host: robadrin-aks1.westeurope.cloudapp.azure.com
       http:
         paths:
-          - path: /rabbitmq/service
+          - path: /rabbitmq/management
             pathType: Prefix
             backend:
               service:
                 name: rabbitmq-service
                 port:
                   number: 15672
+          - path: /rabbitmq/service
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq-service
+                port:
+                  number: 5672
