@@ -4,53 +4,44 @@ import numpy as np
 from tensorflow.keras.preprocessing import image
 import keras
 import os
+from flask_cors import CORS
 import pika
 from pika.exchange_type import ExchangeType
 
-
 app = Flask(__name__)
-print("Server running")
-host = os.getenv('RMQ_HOST')
-username = os.getenv('RMQ_USERNAME')
-password = os.getenv('RMQ_PASS')
-port = os.getenv('RMQ_PORT')
-path = os.getenv('RMQ_PATH')
-
-
-try :
-    credentials = pika.PlainCredentials(username, password)
-    connection_parameters = pika.ConnectionParameters(host,port,path,credentials)
-    connection = pika.BlockingConnection(connection_parameters)
-    channel = connection.channel()
-    channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
-except() :
-    print("Error occurred")
-
-
+CORS(app)
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
 
-
 def waste_prediction(new_image):
-  new_model = keras.models.load_model('./model/waste.h5')
-  test_image = image.load_img(new_image, target_size = (224,224))
- 
-  test_image = image.img_to_array(test_image) / 255
-  test_image = np.expand_dims(test_image, axis=0)
+    new_model = keras.models.load_model('./model/waste.h5')
+    test_image = image.load_img(new_image, target_size=(224, 224))
 
-  predicted_array = new_model.predict(test_image)
-  predicted_value = output_class[np.argmax(predicted_array)]
-  predicted_accuracy = round(np.max(predicted_array) * 100, 2)
-  return predicted_value, predicted_accuracy
+    test_image = image.img_to_array(test_image) / 255
+    test_image = np.expand_dims(test_image, axis=0)
+
+    predicted_array = new_model.predict(test_image)
+    predicted_value = output_class[np.argmax(predicted_array)]
+    predicted_accuracy = round(np.max(predicted_array) * 100, 2)
+    return predicted_value, predicted_accuracy
 
 def publish_to_queue(message):
-    channel.basic_publish(exchange='pubsub', routing_key='', body=message)
+    try:
+        credentials = pika.PlainCredentials(os.getenv('RMQ_USERNAME'), os.getenv('RMQ_PASS'))
+        connection_parameters = pika.ConnectionParameters(os.getenv('RMQ_HOST'), os.getenv('RMQ_PORT'), os.getenv('RMQ_PATH'), credentials)
+        connection = pika.BlockingConnection(connection_parameters)
+        channel = connection.channel()
+        channel.exchange_declare(exchange='pubsub', exchange_type=ExchangeType.fanout)
+        channel.basic_publish(exchange='pubsub', routing_key='', body=message)
+        connection.close()
+    except Exception as e:
+        print("Error publishing to queue:", e)
 
 @app.route('/waste-classifier/service/predict_waste', methods=['POST'])
 def predict_waste():
     if 'img' not in request.files:
         return jsonify({'error': 'No image found in request'})
 
-    try : 
+    try:
         img_file = request.files['img']
 
         # Get the file extension from the filename
@@ -71,16 +62,13 @@ def predict_waste():
         }
 
         return jsonify(response)
-    
-    except() : 
-        return jsonify({'error': 'An Error occurred' , status : 500})
 
+    except Exception as e:
+        return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
 
 @app.route('/waste-classifier/service/',methods=['GET'])
-def server_status() :
-    return jsonify({
-        'status' : 'Server running'
-    })
+def server_status():
+    return jsonify({'status': 'Server running'})
 
 if __name__ == "__main__":
     app.run(debug=False)
