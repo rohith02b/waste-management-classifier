@@ -112,8 +112,6 @@ function ProfileForm({ className }: React.ComponentProps<'form'>) {
         }
       )
       .then((response) => {
-        console.log(response);
-        setUploading(false);
         toast({
           title: `The waste is classified as : ${response?.data?.predicted_waste}`,
           description: `The accuracy of the model is : ${response?.data?.accuracy}%`,
@@ -125,6 +123,9 @@ function ProfileForm({ className }: React.ComponentProps<'form'>) {
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem with your request.',
         });
+      })
+      .finally(() => {
+        setUploading(false);
       });
   };
 
