@@ -5,3 +5,4 @@ keras
 pillow
 pika
 python-dotenv
+flask-cors
