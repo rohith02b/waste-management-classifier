@@ -1,4 +1,10 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wc-service-configmap
+data:
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: wc-service-secret
