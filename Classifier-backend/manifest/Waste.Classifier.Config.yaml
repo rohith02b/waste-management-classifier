@@ -1,10 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: wc-service-configmap
-data:
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: wc-service-secret
@@ -12,6 +6,6 @@ type: Opaque
 data:
   rmq_host: cm9iYWRyaW4tYWtzMS53ZXN0ZXVyb3BlLmNsb3VkYXBwLmF6dXJlLmNvbQ==
   rmq_username: Z3Vlc3Q=
-  rmq_pass: Z3Vlc3Q
+  rmq_pass: Z3Vlc3Q=
   rmq_port: NTY3Mg==
   rmq_path: L3JhYmJpdG1xL3NlcnZpY2U=
