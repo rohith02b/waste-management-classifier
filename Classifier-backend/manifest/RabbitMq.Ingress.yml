@@ -7,8 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: '1g'
 spec:
   rules:
-    - host: robadrin-aks1.westeurope.cloudapp.azure.com
-      http:
+    - http:
         paths:
           - path: /rabbitmq/management
             pathType: Prefix
