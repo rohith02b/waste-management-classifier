@@ -6,9 +6,9 @@ import time
 
 def blink_led(port_number) :
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(40, GPIO.OUT)
+    GPIO.setup(port_number, GPIO.OUT)
 
-    p = GPIO.PWM(40, 1000)  
+    p = GPIO.PWM(port_number, 1000)  
     p.start(100)  
 
     time.sleep(3)  
@@ -19,7 +19,8 @@ def blink_led(port_number) :
 
 def on_message_received(ch, method, properties, body):
     print(f"firstconsumer - received new message: {body}")
-    print(type(body))
+    if body == b'batteries': 
+        blink_led(40)
 
 credentials = pika.PlainCredentials('wdzogqdg', 'wXMu5IswRerIF_TbIwvcaS6avxMlzAZK')
 connection_parameters = pika.ConnectionParameters('goose.rmq2.cloudamqp.com',5672,'wdzogqdg',credentials)
