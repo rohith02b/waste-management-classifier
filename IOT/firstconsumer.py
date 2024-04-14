@@ -19,8 +19,10 @@ def blink_led(port_number) :
 
 def on_message_received(ch, method, properties, body):
     print(f"firstconsumer - received new message: {body}")
-    if body == b'batteries': 
+    if body == b'batteries' or body == 'glass' or body == 'plastic' or body=='light blubs' : 
         blink_led(40)
+    else : 
+        blink_led(18)
 
 credentials = pika.PlainCredentials('wdzogqdg', 'wXMu5IswRerIF_TbIwvcaS6avxMlzAZK')
 connection_parameters = pika.ConnectionParameters('goose.rmq2.cloudamqp.com',5672,'wdzogqdg',credentials)

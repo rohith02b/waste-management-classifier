@@ -11,9 +11,9 @@ from pika.exchange_type import ExchangeType
 app = Flask(__name__)
 CORS(app)
 output_class = ["batteries", "clothes", "e-waste", "glass", "light blubs", "metal", "organic", "paper", "plastic"]
+new_model = keras.models.load_model('./model/waste.h5')
 
 def waste_prediction(new_image):
-    new_model = keras.models.load_model('./model/waste.h5')
     test_image = image.load_img(new_image, target_size=(224, 224))
 
     test_image = image.img_to_array(test_image) / 255
