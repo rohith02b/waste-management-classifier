@@ -19,9 +19,14 @@ def blink_led(port_number) :
 
 def on_message_received(ch, method, properties, body):
     print(f"firstconsumer - received new message: {body}")
-    if body == b'batteries' or body == 'glass' or body == 'plastic' or body=='light blubs' : 
+    if isinstance(body, bytes):
+        body = body.decode()
+
+    print(f"Parsed body: {body}")  # Debugging statement
+
+    if body == 'batteries' or body == 'glass' or body == 'plastic' or body == 'light bulbs': 
         blink_led(40)
-    else : 
+    else: 
         blink_led(18)
 
 credentials = pika.PlainCredentials('wdzogqdg', 'wXMu5IswRerIF_TbIwvcaS6avxMlzAZK')
