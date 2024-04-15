@@ -24,6 +24,7 @@ import { Label } from './ui/label';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { toast } from './ui/use-toast';
+import Image from 'next/image';
 
 export function Uploader() {
   const [open, setOpen] = React.useState(false);
@@ -86,11 +87,20 @@ export function Uploader() {
 function ProfileForm({ className }: React.ComponentProps<'form'>) {
   const [selectedFile, setSelectedFile] = React.useState<any>();
   const [uploading, setUploading] = React.useState(false);
+  const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+  const [result, setResult] = React.useState<any>();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       setSelectedFile(file);
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        setImageUrl(event.target.result as string);
+        setResult('');
+      };
     }
   };
 
@@ -112,17 +122,10 @@ function ProfileForm({ className }: React.ComponentProps<'form'>) {
         }
       )
       .then((response) => {
-        toast({
-          title: `The waste is classified as : ${response?.data?.predicted_waste}`,
-          description: `The accuracy of the model is : ${response?.data?.accuracy}%`,
-        });
+        setResult(response?.data);
       })
       .catch((error) => {
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request.',
-        });
+        setResult('Error');
       })
       .finally(() => {
         setUploading(false);
@@ -141,6 +144,33 @@ function ProfileForm({ className }: React.ComponentProps<'form'>) {
           onChange={handleFileChange}
         />
       </div>
+      {imageUrl && (
+        <div className='py-3'>
+          <Image
+            src={imageUrl}
+            alt='Selected Image'
+            width={400}
+            height={100}
+            className='max-h-[40vh]'
+          />
+        </div>
+      )}
+      {result && (
+        <div className='py-3'>
+          {result === 'Error' ? (
+            <>
+              <p className='text-red-500'>
+                An error occurred, Please try again later
+              </p>
+            </>
+          ) : (
+            <div>
+              <p>Predicted Waste : {result?.predicted_waste}</p>
+              <p>Accuracy : {result?.accuracy}%</p>
+            </div>
+          )}
+        </div>
+      )}
       <Button onClick={handleSubmit} disabled={uploading || !selectedFile}>
         {uploading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
         {uploading ? 'Uploading' : 'Upload'}
