@@ -24,7 +24,7 @@ def on_message_received(ch, method, properties, body):
 
     print(f"Parsed body: {body}")  # Debugging statement
 
-    if body == 'batteries' or body == 'glass' or body == 'plastic' or body == 'light bulbs': 
+    if body == 'batteries' or body == 'glass' or body == 'plastic' or body == 'light blubs': 
         blink_led(40)
     else: 
         blink_led(18)
