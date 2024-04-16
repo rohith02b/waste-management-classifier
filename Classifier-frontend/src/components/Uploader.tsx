@@ -165,7 +165,11 @@ function ProfileForm({ className }: React.ComponentProps<'form'>) {
             </>
           ) : (
             <div>
-              <p>Predicted Waste : {result?.predicted_waste}</p>
+              {result?.predicted_waste === 'light blubs' ? (
+                <p>Predicted Waste : Light bulbs</p>
+              ) : (
+                <p>Predicted Waste : {result?.predicted_waste}</p>
+              )}
               <p>Accuracy : {result?.accuracy}%</p>
             </div>
           )}
